@@ -1,3 +1,88 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "burger-login",
+      "description": "A juicy burger on a wooden board, used for the login page.",
+      "imageUrl": "https://images.unsplash.com/photo-1692737347720-90de4c1862d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXJnZXIlMjBmb29kfGVufDB8fHx8MTc2Mjk2NDc3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "burger food"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Avatar for user 1",
+      "imageUrl": "https://images.unsplash.com/photo-1693039537350-3bba6975add7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2Mjg4OTY0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "creator-avatar-1",
+      "description": "Avatar for creator 1",
+      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2Mjg4OTY0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "creator-avatar-2",
+      "description": "Avatar for creator 2",
+      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2Mjg4OTY0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "creator-avatar-3",
+      "description": "Avatar for creator 3",
+      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2Mjg4OTY0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "story-1",
+      "description": "Story image 1",
+      "imageUrl": "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmb29kfGVufDB8fHx8MTc2Mjk2NDc3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "food"
+    },
+    {
+      "id": "story-2",
+      "description": "Story image 2",
+      "imageUrl": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyZXN0YXVyYW50fGVufDB8fHx8MTc2Mjk2NDc3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "restaurant"
+    },
+    {
+      "id": "story-3",
+      "description": "Story image 3",
+      "imageUrl": "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb29raW5nfGVufDB8fHx8MTc2Mjk2NDc3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cooking"
+    },
+    {
+      "id": "story-4",
+      "description": "Story image 4",
+      "imageUrl": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGVzc2VydHxlbnwwfHx8fDE3NjI5NjQ3NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dessert"
+    },
+    {
+      "id": "story-5",
+      "description": "Story image 5",
+      "imageUrl": "https://images.unsplash.com/photo-1547496502-affa22d38842?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzYWxhZHxlbnwwfHx8fDE3NjI4NzQ1MzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "salad"
+    },
+    {
+      "id": "reel-1",
+      "description": "Video of pasta making",
+      "imageUrl": "https://images.unsplash.com/photo-1713949215217-8ce60dfc93e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwYXN0YSUyMGNvb2tpbmd8ZW58MHx8fHwxNzYyOTY0Nzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pasta cooking"
+    },
+    {
+      "id": "reel-2",
+      "description": "Video of grilling steak",
+      "imageUrl": "https://images.unsplash.com/photo-1657143378504-681ac84e7b30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmlsbGluZyUyMHN0ZWFrfGVufDB8fHx8MTc2Mjk2NDc3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "grilling steak"
+    },
+    {
+      "id": "reel-3",
+      "description": "Video of baking a cake",
+      "imageUrl": "https://images.unsplash.com/photo-1714678790269-48e9a87cab13?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxiYWtpbmclMjBjYWtlfGVufDB8fHx8MTc2MjkzOTk3NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "baking cake"
+    },
+    {
+      "id": "reel-4",
+      "description": "Video of fresh salad",
+      "imageUrl": "https://images.unsplash.com/photo-1575282242856-93d19aafaa58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYWtpbmclMjBzYWxhZHxlbnwwfHx8fDE3NjI5NjQ3NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "making salad"
+    }
+  ]
 }
