@@ -24,41 +24,23 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { reels } from "@/lib/placeholder-data";
-import type { CartItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-
-const initialCartItems: CartItem[] = [
-  { id: "cart-item-1", reel: reels[0], quantity: 1 },
-  { id: "cart-item-2", reel: reels[2], quantity: 2 },
-];
+import { useCart } from "@/context/cart-context";
 
 type PaymentStep = "cart" | "payment" | "receipt";
 
 export function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+  const { cartItems, updateQuantity, clearCart } = useCart();
   const [step, setStep] = useState<PaymentStep>("cart");
   const { toast } = useToast();
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.reel.product.price * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0
   );
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
-
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      setCartItems(cartItems.filter((item) => item.id !== id));
-    } else {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
-  };
 
   const handlePayment = () => {
     toast({
@@ -69,7 +51,18 @@ export function Cart() {
   };
 
   const resetCart = () => {
+      // Don't clear cart here, receipt shows cart items.
+      // Cart is cleared when user closes receipt sheet.
       setStep("cart");
+  }
+
+  const handleCloseSheet = (open: boolean) => {
+    if (!open) {
+      if (step === 'receipt') {
+        clearCart();
+      }
+      resetCart();
+    }
   }
 
   const renderCartContent = () => (
@@ -86,17 +79,17 @@ export function Cart() {
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center gap-4 py-4">
                 <Image
-                  src={item.reel.videoUrl}
-                  alt={item.reel.product.name}
+                  src={item.product.imageUrl}
+                  alt={item.product.name}
                   width={64}
                   height={64}
                   className="rounded-md object-cover"
                   data-ai-hint="food"
                 />
                 <div className="flex-1">
-                  <p className="font-semibold">{item.reel.product.name}</p>
+                  <p className="font-semibold">{item.product.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    ${item.reel.product.price.toFixed(2)}
+                    ${item.product.price.toFixed(2)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -194,8 +187,8 @@ export function Cart() {
         <div className="space-y-2 rounded-md border p-4">
             {cartItems.map(item => (
                  <div key={item.id} className="flex justify-between text-sm">
-                    <span>{item.quantity} x {item.reel.product.name}</span>
-                    <span>${(item.quantity * item.reel.product.price).toFixed(2)}</span>
+                    <span>{item.quantity} x {item.product.name}</span>
+                    <span>${(item.quantity * item.product.price).toFixed(2)}</span>
                  </div>
             ))}
             <Separator />
@@ -226,7 +219,7 @@ export function Cart() {
   };
 
   return (
-    <Sheet onOpenChange={(open) => !open && resetCart()}>
+    <Sheet onOpenChange={handleCloseSheet}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <ShoppingCart className="h-5 w-5" />

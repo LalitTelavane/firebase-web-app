@@ -1,4 +1,5 @@
 
+
 export type User = {
   id: string;
   name: string;
@@ -20,22 +21,25 @@ export type Story = {
   createdAt: string;
 };
 
+export type Product = {
+    id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+}
+
 export type Reel = {
   id: string;
   creator: Creator;
   videoUrl: string; // Placeholder for video, using image URL
   description: string;
   likes: number;
-  product: {
-    id: string;
-    name: string;
-    price: number;
-  };
+  product: Product;
 };
 
 export type CartItem = {
   id: string;
-  reel: Reel;
+  product: Product;
   quantity: number;
 };
 

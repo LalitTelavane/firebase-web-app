@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Heart, MessageCircle, ShoppingCart, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/context/cart-context";
 
 type ReelProps = {
   reel: ReelType;
@@ -18,8 +19,10 @@ type ReelProps = {
 export function Reel({ reel }: ReelProps) {
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
+  const { addItem } = useCart();
 
   const handleAddToCart = () => {
+    addItem(reel.product);
     toast({
       title: "Added to cart!",
       description: `${reel.product.name} is now in your cart.`,
