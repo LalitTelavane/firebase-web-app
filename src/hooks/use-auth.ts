@@ -23,7 +23,13 @@ export const useAuth = () => {
     await updateProfile(user, { displayName });
 
     // Determine role based on email
-    const role = email.endsWith('@student') ? 'creator' : 'user';
+    let role = 'user';
+    if (email.toLowerCase() === 'lalittelavane9@admin.com') {
+      role = 'admin';
+    } else if (email.endsWith('@student')) {
+      role = 'creator';
+    }
+    
 
     const userDocRef = doc(firestore, 'users', user.uid);
     await setDoc(userDocRef, {
@@ -33,6 +39,11 @@ export const useAuth = () => {
         role: role,
         avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/150/150`
     });
+
+    if (role === 'admin') {
+      const adminRoleDoc = doc(firestore, 'roles_admin', user.uid);
+      await setDoc(adminRoleDoc, { grantedAt: new Date() });
+    }
 
     return userCredential;
   };

@@ -1,3 +1,4 @@
+
 'use client';
 import { useAuth } from '@/hooks/use-auth';
 import { redirect } from 'next/navigation';
@@ -21,7 +22,9 @@ export default function Home() {
         getDoc(userDocRef).then((docSnap) => {
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            if (userData.role === 'creator' || userData.role === 'admin') {
+            if (userData.role === 'admin') {
+              redirect('/dashboard/admin');
+            } else if (userData.role === 'creator') {
               redirect('/dashboard/creator');
             } else {
               redirect('/dashboard');

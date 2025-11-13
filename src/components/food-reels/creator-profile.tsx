@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import type { User, Reel } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,7 +14,7 @@ type CreatorProfileProps = {
 };
 
 export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
-  const isAdmin = creator.role === 'creator' || creator.role === 'admin';
+  const isCreator = creator.role === 'creator' || creator.role === 'admin';
   return (
     <div className="space-y-8">
       <div className="flex flex-col items-center gap-4 md:flex-row md:items-start">
@@ -24,7 +25,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
         <div className="text-center md:text-left md:ml-6">
           <h2 className="font-headline text-4xl font-bold">{creator.name}</h2>
           <p className="text-muted-foreground">{creator.email}</p>
-          {isAdmin && (
+          {isCreator && (
             <div className="mt-4 flex gap-2 justify-center md:justify-start">
                 <Button>
                 <Video className="mr-2 h-4 w-4" /> Add Story
@@ -40,7 +41,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
       <Tabs defaultValue="reels" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="reels">Reels</TabsTrigger>
-            <TabsTrigger value="admin" disabled={!isAdmin}>Admin</TabsTrigger>
+            <TabsTrigger value="admin" disabled={!isCreator}>Admin</TabsTrigger>
         </TabsList>
         <TabsContent value="reels">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 mt-4">

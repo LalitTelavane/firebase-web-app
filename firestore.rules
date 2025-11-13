@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Firestore Security Rules for the FoodReels application.
  *
@@ -97,10 +98,10 @@ service cloud.firestore {
      */
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
-      allow list: if false;
+      allow list: if isAdmin();
       allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(userId);
+      allow update: if isExistingOwner(userId) || isAdmin();
+      allow delete: if isExistingOwner(userId) || isAdmin();
     }
 
     /**
@@ -125,8 +126,8 @@ service cloud.firestore {
       allow get: if true;
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      allow update: if isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid;
-      allow delete: if isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid;
+      allow update: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
+      allow delete: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
     }
 
     /**
@@ -146,24 +147,21 @@ service cloud.firestore {
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update: if false;
-      allow delete: if isSignedIn() && resource != null && request.resource.data.userId == request.auth.uid; //Added a check to make sure the delete is done by the user
+      allow delete: if (isSignedIn() && resource != null && request.resource.data.userId == request.auth.uid) || isAdmin();
     }
 
     /**
      * @description Rule for products.
      * @path /products/{productId}
      * @allow (get, list) Any user can read product information.
-     * @allow create: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-     * @allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-     * @allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-     * @principle Allows public read access, but restricts writes.
+     * @principle Allows public read access, but restricts writes to creators or admins.
      */
     match /products/{productId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
+      allow delete: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
     }
 
     /**
@@ -180,11 +178,11 @@ service cloud.firestore {
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/cart/{cartItemId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow update: if isExistingOwner(userId) || isAdmin();
+      allow delete: if isExistingOwner(userId) || isAdmin();
     }
 
     /**
@@ -201,11 +199,11 @@ service cloud.firestore {
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/orders/{orderId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow update: if isExistingOwner(userId) || isAdmin();
+      allow delete: if isExistingOwner(userId) || isAdmin();
     }
 
     /**
@@ -222,11 +220,11 @@ service cloud.firestore {
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/orders/{orderId}/orderItems/{orderItemId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow update: if isExistingOwner(userId) || isAdmin();
+      allow delete: if isExistingOwner(userId) || isAdmin();
     }
 
     /**
@@ -251,8 +249,8 @@ service cloud.firestore {
       allow get: if true;
       allow list: if true;
       allow create: if isSignedIn() && request.resource.data.creatorId == request.auth.uid;
-      allow update: if isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid;
-      allow delete: if isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid;
+      allow update: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
+      allow delete: if (isSignedIn() && resource != null && resource.data.creatorId == request.auth.uid) || isAdmin();
     }
 
     /**
