@@ -9,16 +9,28 @@ import {
   signInAnonymously as firebaseSignInAnonymously,
   updateProfile
 } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 export const useAuth = () => {
-  const { auth, user, isUserLoading, userError } = useFirebase();
+  const { auth, firestore, user, isUserLoading, userError } = useFirebase();
 
   const signUpWithEmail = async (email: string, password: string, displayName: string) => {
-    if (!auth) throw new Error("Auth service not available");
+    if (!auth || !firestore) throw new Error("Auth or Firestore service not available");
+    
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    if (userCredential.user) {
-      await updateProfile(userCredential.user, { displayName });
-    }
+    const user = userCredential.user;
+
+    await updateProfile(user, { displayName });
+
+    const userDocRef = doc(firestore, 'users', user.uid);
+    await setDoc(userDocRef, {
+        id: user.uid,
+        email: user.email,
+        username: displayName,
+        userType: 'user', // Default role
+        profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/150/150`
+    });
+
     return userCredential;
   };
 

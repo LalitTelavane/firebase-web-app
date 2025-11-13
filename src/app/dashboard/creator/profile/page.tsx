@@ -18,6 +18,9 @@ export default function ProfilePage() {
                 setCreator(currentCreator);
                 const aReels = reels.filter(r => r.creator.id === currentCreator.id);
                 setCreatorReels(aReels);
+            } else {
+                 const currentUser = users.find(u => u.email === authUser.email);
+                 if(currentUser) setCreator(currentUser);
             }
         }
     }, [authUser]);

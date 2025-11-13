@@ -24,16 +24,17 @@
           "description": "URL of the user's profile picture.",
           "format": "uri"
         },
-        "userType": {
+        "role": {
           "type": "string",
-          "description": "Type of user: user, creator, or admin."
+          "description": "Type of user: user, creator, or admin.",
+          "enum": ["user", "creator", "admin"]
         }
       },
       "required": [
         "id",
         "email",
         "username",
-        "userType"
+        "role"
       ]
     },
     "Video": {
@@ -132,6 +133,10 @@
           "type": "string",
           "description": "Unique identifier for the Product entity."
         },
+        "creatorId": {
+          "type": "string",
+          "description": "Reference to the User who created the product."
+        },
         "videoId": {
           "type": "string",
           "description": "Reference to the Video in which the product is featured. (Relationship: Video 1:N Product)"
@@ -156,6 +161,7 @@
       },
       "required": [
         "id",
+        "creatorId",
         "videoId",
         "name",
         "description",

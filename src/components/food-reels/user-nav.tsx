@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,15 +13,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "../ui/skeleton";
+import { useFirestore } from "@/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import type { User } from "@/lib/types";
+
 
 export function UserNav() {
   const router = useRouter();
   const { user, signOut, isUserLoading } = useAuth();
+  const firestore = useFirestore();
+  const [appUser, setAppUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (user && firestore && !user.isAnonymous) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      getDoc(userDocRef).then(docSnap => {
+        if(docSnap.exists()){
+            setAppUser(docSnap.data() as User)
+        }
+      })
+    } else {
+        setAppUser(null);
+    }
+  }, [user, firestore])
 
   const handleLogout = async () => {
     await signOut();
@@ -39,9 +60,11 @@ export function UserNav() {
     )
   }
 
-  const userInitial = user.isAnonymous ? 'G' : (user.displayName?.charAt(0) || user.email?.charAt(0) || '?').toUpperCase();
-  const userName = user.isAnonymous ? 'Guest' : (user.displayName || 'User');
+  const userInitial = user.isAnonymous ? 'G' : (appUser?.name?.charAt(0) || '?').toUpperCase();
+  const userName = user.isAnonymous ? 'Guest' : (appUser?.name || 'User');
   const userEmail = user.isAnonymous ? '' : user.email;
+  const profileLink = appUser?.role === 'creator' || appUser?.role === 'admin' ? '/dashboard/creator/profile' : '/dashboard/profile';
+
 
   return (
     <div className="flex items-center gap-2">
@@ -50,7 +73,7 @@ export function UserNav() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10 border-2 border-transparent group-hover:border-primary transition-colors">
-              <AvatarImage src={user.photoURL ?? `https://picsum.photos/seed/creator-avatar-1/40/40`} alt={userName} data-ai-hint="person face" />
+              <AvatarImage src={appUser?.avatarUrl ?? `https://picsum.photos/seed/creator-avatar-1/40/40`} alt={userName} data-ai-hint="person face" />
               <AvatarFallback>{userInitial}</AvatarFallback>
             </Avatar>
           </Button>
@@ -66,9 +89,9 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <Link href="/dashboard/profile" passHref>
+            <Link href={profileLink} passHref>
               <DropdownMenuItem disabled={user.isAnonymous}>
-                <User className="mr-2 h-4 w-4" />
+                <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
             </Link>
