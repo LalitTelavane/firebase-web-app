@@ -39,7 +39,7 @@ export default function SignupPage() {
         title: "Account Created!",
         description: "You have been successfully signed up.",
       });
-      router.push("/dashboard");
+      router.push("/"); // Redirect to home to trigger role-based routing
     } catch (err: any) {
       setError(err.message);
     }
@@ -75,7 +75,7 @@ export default function SignupPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="m@example.com or user@student"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

@@ -22,13 +22,16 @@ export const useAuth = () => {
 
     await updateProfile(user, { displayName });
 
+    // Determine role based on email
+    const role = email.endsWith('@student') ? 'creator' : 'user';
+
     const userDocRef = doc(firestore, 'users', user.uid);
     await setDoc(userDocRef, {
         id: user.uid,
         email: user.email,
-        username: displayName,
-        userType: 'user', // Default role
-        profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/150/150`
+        name: displayName,
+        role: role,
+        avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/150/150`
     });
 
     return userCredential;

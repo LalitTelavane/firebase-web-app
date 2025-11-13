@@ -15,11 +15,11 @@
           "description": "User's email address.",
           "format": "email"
         },
-        "username": {
+        "name": {
           "type": "string",
-          "description": "User's chosen username."
+          "description": "User's display name."
         },
-        "profilePictureUrl": {
+        "avatarUrl": {
           "type": "string",
           "description": "URL of the user's profile picture.",
           "format": "uri"
@@ -27,13 +27,17 @@
         "role": {
           "type": "string",
           "description": "Type of user: user, creator, or admin.",
-          "enum": ["user", "creator", "admin"]
+          "enum": [
+            "user",
+            "creator",
+            "admin"
+          ]
         }
       },
       "required": [
         "id",
         "email",
-        "username",
+        "name",
         "role"
       ]
     },
