@@ -9,7 +9,7 @@ import { orders as allOrders } from "@/lib/placeholder-orders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusSquare, Video, Heart, MessageCircle, Upload } from "lucide-react";
+import { PlusSquare, Video, Heart, MessageCircle, Upload, HardDriveUpload, CloudUpload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -78,6 +78,13 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
     }
   };
 
+  const handleGoogleDriveUpload = () => {
+    toast({
+        title: "Coming Soon!",
+        description: "Google Drive integration is not yet available."
+    })
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col items-center gap-4 md:flex-row md:items-start">
@@ -136,8 +143,20 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
                                             <Input id="price" name="price" type="number" placeholder="e.g., 15.99" step="0.01" required />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="video">Video File</Label>
-                                            <Input id="video" name="video" type="file" required />
+                                            <Label>Video Source</Label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Button type="button" variant="outline" asChild>
+                                                   <Label htmlFor="video-file" className="cursor-pointer h-full flex flex-col items-center justify-center gap-2">
+                                                        <HardDriveUpload className="h-6 w-6" />
+                                                        <span>From Device</span>
+                                                    </Label>
+                                                </Button>
+                                                <Input id="video-file" name="video" type="file" className="hidden" required />
+                                                <Button type="button" variant="outline" className="flex flex-col items-center justify-center gap-2 h-full" onClick={handleGoogleDriveUpload}>
+                                                    <CloudUpload className="h-6 w-6" />
+                                                    <span>Google Drive</span>
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                     <DialogFooter>
