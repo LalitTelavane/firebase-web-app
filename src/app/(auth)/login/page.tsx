@@ -10,9 +10,9 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,8 +26,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { signInWithEmail, signInAnonymously, isUserLoading } = useAuth();
-  const [email, setEmail] = useState("creator@example.com");
-  const [password, setPassword] = useState("password");
+  const [email, setEmail] = useState("lalittelavane9@admin.com");
+  const [password, setPassword] = useState("admin@123");
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,7 +39,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back!",
       });
-      router.push("/dashboard");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
     }
@@ -100,7 +100,7 @@ export default function LoginPage() {
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isUserLoading}>
                 {isUserLoading ? 'Logging in...' : 'Login'}
               </Button>
-              <Button variant="outline" className="w-full" onClick={handleAnonymousLogin} disabled={isUserLoading}>
+              <Button variant="outline" className="w-full" onClick={handleAnonymousLogin} disabled={isUserLoading} type="button">
                 Login as Guest
               </Button>
             </CardContent>
