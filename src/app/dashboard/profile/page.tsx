@@ -1,37 +1,37 @@
+
 'use client';
-import { CreatorProfile } from "@/components/food-reels/creator-profile";
-import { users, reels } from "@/lib/placeholder-data";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
-import type { User, Reel as ReelType } from "@/lib/types";
+import type { User } from "@/lib/types";
+import { users } from "@/lib/placeholder-data";
+import { PurchaseHistory } from "@/components/food-reels/purchase-history";
+import { orders } from "@/lib/placeholder-orders";
 
 export default function ProfilePage() {
     const { user: authUser } = useAuth();
-    const [creator, setCreator] = useState<User | null>(null);
-    const [creatorReels, setCreatorReels] = useState<ReelType[]>([]);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         if (authUser) {
             // In a real app, you'd fetch this from your backend based on authUser.uid
-            const currentCreator = users.find(u => u.email === authUser.email && (u.role === 'creator' || u.role === 'admin'));
-            if (currentCreator) {
-                setCreator(currentCreator);
-                const aReels = reels.filter(r => r.creator.id === currentCreator.id);
-                setCreatorReels(aReels);
+            const currentUser = users.find(u => u.email === authUser.email);
+            if (currentUser) {
+                setUser(currentUser);
             }
         }
     }, [authUser]);
 
 
-    if (!creator) return (
+    if (!user) return (
         <div className="container mx-auto py-8 text-center">
             <p>Loading profile...</p>
         </div>
     );
     
+    // For now, we pass the placeholder orders to the purchase history
     return (
         <div className="container mx-auto py-8">
-            <CreatorProfile creator={creator} reels={creatorReels} />
+            <PurchaseHistory user={user} orders={orders} />
         </div>
     );
 }

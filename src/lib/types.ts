@@ -1,3 +1,4 @@
+
 export type User = {
   id: string;
   name: string;
@@ -36,4 +37,20 @@ export type CartItem = {
   id: string;
   reel: Reel;
   quantity: number;
+};
+
+export type OrderItem = {
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+};
+
+export type Order = {
+    id: string;
+    orderDate: string;
+    totalAmount: number;
+    status: 'Delivered' | 'Processing' | 'Cancelled';
+    items: OrderItem[];
 };
