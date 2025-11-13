@@ -1,10 +1,15 @@
+"use client";
+
 import { FoodReelsLogo } from "./logo";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { UserNav } from "./user-nav";
 import { Cart } from "./cart";
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppHeader() {
+  const { user, isUserLoading } = useAuth();
+  
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm">
       <div className="flex items-center gap-4">
@@ -17,8 +22,12 @@ export function AppHeader() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Cart />
-        <UserNav />
+        { !isUserLoading && user && (
+          <>
+            <Cart />
+            <UserNav />
+          </>
+        )}
       </div>
     </header>
   );
