@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -27,14 +28,13 @@ export default function SignupPage() {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
-      await signUpWithEmail(email, password, fullName);
+      await signUpWithEmail(email, password);
       toast({
         title: "Account Created!",
         description: "You have been successfully signed up.",
@@ -66,10 +66,6 @@ export default function SignupPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <div className="grid gap-2">
-              <Label htmlFor="full-name">Full name</Label>
-              <Input id="full-name" placeholder="Max" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input

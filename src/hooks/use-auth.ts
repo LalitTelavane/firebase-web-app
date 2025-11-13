@@ -14,28 +14,30 @@ import { doc, setDoc } from 'firebase/firestore';
 export const useAuth = () => {
   const { auth, firestore, user, isUserLoading, userError } = useFirebase();
 
-  const signUpWithEmail = async (email: string, password: string, displayName: string) => {
+  const signUpWithEmail = async (email: string, password: string) => {
     if (!auth || !firestore) throw new Error("Auth or Firestore service not available");
     
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    await updateProfile(user, { displayName });
-
-    // Determine role based on email
+    // Determine role and name based on email
     let role = 'user';
+    let name = email.split('@')[0]; // Default name from email
+
     if (email.toLowerCase() === 'lalittelavane9@admin.com') {
       role = 'admin';
+      name = 'Admin';
     } else if (email.endsWith('@student')) {
       role = 'creator';
     }
     
+    await updateProfile(user, { displayName: name });
 
     const userDocRef = doc(firestore, 'users', user.uid);
     await setDoc(userDocRef, {
         id: user.uid,
         email: user.email,
-        name: displayName,
+        name: name,
         role: role,
         avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/150/150`
     });
