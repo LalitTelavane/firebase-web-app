@@ -1,0 +1,484 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the FoodReels application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "username": {
+          "type": "string",
+          "description": "User's chosen username."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "userType": {
+          "type": "string",
+          "description": "Type of user: user, creator, or admin."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "username",
+        "userType"
+      ]
+    },
+    "Video": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Video",
+      "type": "object",
+      "description": "Represents a food-related video.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Video entity."
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "Reference to the User who created the video. (Relationship: User 1:N Video)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the video."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the video."
+        },
+        "videoUrl": {
+          "type": "string",
+          "description": "URL of the video.",
+          "format": "uri"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "URL of the video's thumbnail image.",
+          "format": "uri"
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the video was uploaded.",
+          "format": "date-time"
+        },
+        "likeIds": {
+          "type": "array",
+          "description": "References to Likes. (Relationship: Like N:N Video)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "creatorId",
+        "title",
+        "description",
+        "videoUrl",
+        "thumbnailUrl",
+        "uploadDate"
+      ]
+    },
+    "Like": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Like",
+      "type": "object",
+      "description": "Represents a user's 'like' of a video.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Like entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who liked the video. (Relationship: User 1:N Like)"
+        },
+        "videoId": {
+          "type": "string",
+          "description": "Reference to the Video that was liked. (Relationship: Video 1:N Like)"
+        },
+        "likeDate": {
+          "type": "string",
+          "description": "Date and time the video was liked.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "videoId",
+        "likeDate"
+      ]
+    },
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product featured in a video.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Product entity."
+        },
+        "videoId": {
+          "type": "string",
+          "description": "Reference to the Video in which the product is featured. (Relationship: Video 1:N Product)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the product."
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the product."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the product image.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "videoId",
+        "name",
+        "description",
+        "price",
+        "imageUrl"
+      ]
+    },
+    "CartItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CartItem",
+      "type": "object",
+      "description": "Represents an item in the user's shopping cart.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CartItem entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who owns the cart. (Relationship: User 1:N CartItem)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to the Product in the cart. (Relationship: Product 1:N CartItem)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product in the cart."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "productId",
+        "quantity"
+      ]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents a completed order.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Order entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who placed the order. (Relationship: User 1:N Order)"
+        },
+        "orderDate": {
+          "type": "string",
+          "description": "Date and time the order was placed.",
+          "format": "date-time"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total amount of the order."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Payment method used for the order."
+        },
+        "orderItemIds": {
+          "type": "array",
+          "description": "References to OrderItems. (Relationship: Order 1:N OrderItem)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "orderDate",
+        "totalAmount",
+        "paymentMethod"
+      ]
+    },
+    "OrderItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "OrderItem",
+      "type": "object",
+      "description": "Represents an item within an order.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the OrderItem entity."
+        },
+        "orderId": {
+          "type": "string",
+          "description": "Reference to the Order this item belongs to. (Relationship: Order 1:N OrderItem)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to the Product that was ordered. (Relationship: Product 1:N OrderItem)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product ordered."
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the product at the time of the order."
+        }
+      },
+      "required": [
+        "id",
+        "orderId",
+        "productId",
+        "quantity",
+        "price"
+      ]
+    },
+    "Story": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Story",
+      "type": "object",
+      "description": "Represents a short-lived story.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Story entity."
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "Reference to the User who created the story. (Relationship: User 1:N Story)"
+        },
+        "storyUrl": {
+          "type": "string",
+          "description": "URL of the story content.",
+          "format": "uri"
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the story was uploaded.",
+          "format": "date-time"
+        },
+        "expirationDate": {
+          "type": "string",
+          "description": "Date and time the story expires.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "creatorId",
+        "storyUrl",
+        "uploadDate",
+        "expirationDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Path-based ownership ensures only the user (or an admin) can modify their profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/videos/{videoId}",
+        "definition": {
+          "entityName": "Video",
+          "schema": {
+            "$ref": "#/backend/entities/Video"
+          },
+          "description": "Stores video metadata. Includes creatorId for identifying the video creator and likeIds array for denormalized like information, used for authorization independence.",
+          "params": [
+            {
+              "name": "videoId",
+              "description": "The unique identifier for the video."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/likes/{likeId}",
+        "definition": {
+          "entityName": "Like",
+          "schema": {
+            "$ref": "#/backend/entities/Like"
+          },
+          "description": "Stores user likes for videos. Contains userId and videoId for easy querying.",
+          "params": [
+            {
+              "name": "likeId",
+              "description": "The unique identifier for the like."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores product information. Contains videoId to link products to videos.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/cart/{cartItemId}",
+        "definition": {
+          "entityName": "CartItem",
+          "schema": {
+            "$ref": "#/backend/entities/CartItem"
+          },
+          "description": "Stores cart items for each user. Path-based ownership ensures only the user can access their cart.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "cartItemId",
+              "description": "The unique identifier for the cart item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/orders/{orderId}",
+        "definition": {
+          "entityName": "Order",
+          "schema": {
+            "$ref": "#/backend/entities/Order"
+          },
+          "description": "Stores order information for each user. Path-based ownership ensures only the user can access their orders.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "orderId",
+              "description": "The unique identifier for the order."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/orders/{orderId}/orderItems/{orderItemId}",
+        "definition": {
+          "entityName": "OrderItem",
+          "schema": {
+            "$ref": "#/backend/entities/OrderItem"
+          },
+          "description": "Stores order items for each order. Nested under orders to maintain the relationship.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "orderId",
+              "description": "The unique identifier for the order."
+            },
+            {
+              "name": "orderItemId",
+              "description": "The unique identifier for the order item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/stories/{storyId}",
+        "definition": {
+          "entityName": "Story",
+          "schema": {
+            "$ref": "#/backend/entities/Story"
+          },
+          "description": "Stores story metadata. Contains creatorId to identify the story creator.",
+          "params": [
+            {
+              "name": "storyId",
+              "description": "The unique identifier for the story."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Indicates admin status. Existence of a document grants admin privileges. No content required.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support FoodReels' core features, focusing on scalability, security, and ease of maintenance. It leverages path-based ownership for user-related data and denormalization to achieve authorization independence. This design avoids using `get()` calls in security rules, thus enabling atomic operations (transactions/batches) and simplifying debugging. The structure segregates data based on access requirements (e.g., user-owned vs. shared content) to simplify security rules and optimize query performance.\n\n**Authorization Independence and QAPs:**\n\n*   **Users:** User profiles are stored in `/users/{userId}`. This path-based ownership ensures only the user (or an admin) can modify their profile. There is no need to `get()` any data for authorization. QAPs are supported because listing users does not require filtering based on content.\n*   **Videos:** Videos are stored in `/videos/{videoId}`.  The `creatorId` field within each video document allows for simple querying of videos created by a specific user.  Since videos can be liked by other users, denormalizing the `likeIds` array provides authorization independence for checking which users liked a specific video.  This allows for simple `list` operations and supports QAPs.  Admins will have to have some system to moderate the videos.  Since the user request indicates the use of a custom tool to moderate videos, this design assumes that tool bypasses these firestore rules.\n*   **Likes:** Likes are stored in `/likes/{likeId}`. Each document contains the `userId` and `videoId`. This structure allows easy querying of likes for a specific video or by a specific user. Like video, no `get()` operations for authorization, QAPs are supported by avoiding content filtering in rules.\n*   **Products:** Products are stored in `/products/{productId}`. The `videoId` field allows easy querying of products related to a specific video.\n*   **CartItems:** Cart items are stored in `/users/{userId}/cart/{cartItemId}`. This path-based ownership ensures that only the user can access their cart. The `productId` field references the product in the cart.\n*   **Orders/OrderItems:** Orders are stored in `/users/{userId}/orders/{orderId}`, reflecting ownership. Order items are stored as subcollections under each order (`/users/{userId}/orders/{orderId}/orderItems/{orderItemId}`). This structure maintains the relationship and ownership.\n*   **Stories:** Stories are stored in `/stories/{storyId}`.  The `creatorId` field allows for querying stories created by a specific user. Since stories are short-lived, you can use a Cloud Function to automatically delete expired stories, which keeps the database clean and optimized. Again, the admin moderation tool assumed to be bypasses these firestore rules.\n\n**Global Roles:**\n\n*   Admin status is granted by the existence of a document in `/roles_admin/{userId}`. This existence-based check is efficient and avoids complex rule logic.  This solution provides DBAC without custom claims. This solution allows `list` operation without filtering based on content which provides QAPs. \n\nThis combination of structural segregation, path-based ownership, and denormalization results in a Firestore structure that is secure, scalable, and easy to debug, aligning with the core design principles."
+  }
+}
