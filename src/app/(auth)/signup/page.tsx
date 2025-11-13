@@ -26,8 +26,8 @@ export default function SignupPage() {
   const router = useRouter();
   const { signUpWithEmail, isUserLoading } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('lalittelavane9@admin.com');
+  const [password, setPassword] = useState('admin@123');
   const [error, setError] = useState<string | null>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
