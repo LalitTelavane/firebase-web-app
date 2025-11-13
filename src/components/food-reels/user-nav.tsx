@@ -86,6 +86,7 @@ export function UserNav() {
                 {userEmail}
               </p>
             </div>
+
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>

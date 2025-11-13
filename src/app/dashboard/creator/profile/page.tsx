@@ -4,26 +4,37 @@ import { users, reels } from "@/lib/placeholder-data";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import type { User, Reel as ReelType } from "@/lib/types";
+import { useSearchParams } from "next/navigation";
 
 export default function ProfilePage() {
     const { user: authUser } = useAuth();
+    const searchParams = useSearchParams();
+    const profileId = searchParams.get('id');
+
     const [creator, setCreator] = useState<User | null>(null);
     const [creatorReels, setCreatorReels] = useState<ReelType[]>([]);
 
     useEffect(() => {
-        if (authUser) {
-            // In a real app, you'd fetch this from your backend based on authUser.uid
-            const currentCreator = users.find(u => u.email === authUser.email && (u.role === 'creator' || u.role === 'admin'));
-            if (currentCreator) {
-                setCreator(currentCreator);
-                const aReels = reels.filter(r => r.creator.id === currentCreator.id);
-                setCreatorReels(aReels);
-            } else {
-                 const currentUser = users.find(u => u.email === authUser.email);
-                 if(currentUser) setCreator(currentUser);
+        let targetUser: User | undefined;
+
+        if (profileId) {
+            // View someone else's profile
+            targetUser = users.find(u => u.id === profileId && (u.role === 'creator' || u.role === 'admin'));
+        } else if (authUser) {
+            // View your own profile
+            targetUser = users.find(u => u.email === authUser.email && (u.role === 'creator' || u.role === 'admin'));
+            if (!targetUser) {
+                 targetUser = users.find(u => u.email === authUser.email);
             }
         }
-    }, [authUser]);
+        
+        if (targetUser) {
+            setCreator(targetUser);
+            const userReels = reels.filter(r => r.creator.id === targetUser!.id);
+            setCreatorReels(userReels);
+        }
+
+    }, [authUser, profileId]);
 
 
     if (!creator) return (
