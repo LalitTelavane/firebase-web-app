@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,9 +27,10 @@ export function AppHeader() {
   useEffect(() => {
     if (searchQuery.trim() !== "") {
       const creators = users.filter((u) => u.role === 'creator' || u.role === 'admin');
-      const filteredCreators = creators.filter((creator) =>
-        creator.name.toLowerCase().startsWith(searchQuery.toLowerCase())
-      );
+      const filteredCreators = creators.filter((creator) => {
+        const emailName = creator.email.split('@')[0];
+        return emailName.toLowerCase().startsWith(searchQuery.toLowerCase()) || creator.name.toLowerCase().startsWith(searchQuery.toLowerCase());
+      });
       setSearchResults(filteredCreators);
       setIsSearchOpen(true);
     } else {
