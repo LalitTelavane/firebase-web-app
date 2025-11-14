@@ -23,6 +23,11 @@ export function AppHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserType[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (searchQuery.trim() !== "") {
@@ -38,6 +43,20 @@ export function AppHeader() {
       setIsSearchOpen(false);
     }
   }, [searchQuery]);
+
+  if (!isClient) {
+    // Render a placeholder or nothing on the server to prevent hydration mismatch
+    return (
+        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+                <FoodReelsLogo />
+            </div>
+            <div className="flex items-center gap-2">
+                {/* Skeleton or placeholder for nav items */}
+            </div>
+        </header>
+    );
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm">
@@ -63,7 +82,7 @@ export function AppHeader() {
                 {searchResults.map((creator) => (
                   <Link
                     key={creator.id}
-                    href={`/dashboard/creator/profile?id=${creator.id}`}
+                    href={`/dashboard/profile?id=${creator.id}`}
                     className="flex items-center gap-3 p-2 rounded-md hover:bg-accent"
                     onClick={() => {
                         setSearchQuery('');

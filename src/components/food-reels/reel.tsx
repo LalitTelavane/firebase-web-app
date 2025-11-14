@@ -1,7 +1,8 @@
+
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { Reel as ReelType } from "@/lib/types";
 
@@ -11,6 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Heart, MessageCircle, ShoppingCart, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/cart-context";
+import { Skeleton } from "../ui/skeleton";
 
 type ReelProps = {
   reel: ReelType;
@@ -18,8 +20,13 @@ type ReelProps = {
 
 export function Reel({ reel }: ReelProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
   const { addItem } = useCart();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleAddToCart = () => {
     addItem(reel.product);
@@ -29,7 +36,7 @@ export function Reel({ reel }: ReelProps) {
     });
   };
 
-  return (
+  const cardContent = (
     <Card className="w-full max-w-md mx-auto snap-center overflow-hidden rounded-2xl shadow-lg border-2">
       <CardHeader className="flex flex-row items-center gap-3 p-3">
         <Avatar className="h-10 w-10 border">
@@ -74,4 +81,22 @@ export function Reel({ reel }: ReelProps) {
       </CardFooter>
     </Card>
   );
+
+  const skeleton = (
+    <Card className="w-full max-w-md mx-auto snap-center overflow-hidden rounded-2xl shadow-lg border-2">
+      <CardHeader className="flex flex-row items-center gap-3 p-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </CardHeader>
+      <CardContent className="p-0 relative aspect-[9/16]">
+        <Skeleton className="h-full w-full" />
+      </CardContent>
+      <CardFooter className="p-2 grid grid-cols-2 gap-2">
+         <Skeleton className="h-9 w-full" />
+         <Skeleton className="h-9 w-full" />
+      </CardFooter>
+    </Card>
+  );
+
+  return isClient ? cardContent : skeleton;
 }
