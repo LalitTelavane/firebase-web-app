@@ -8,7 +8,7 @@ import { users as allUsers } from "@/lib/placeholder-data";
 import { orders as allOrders } from "@/lib/placeholder-orders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PlusSquare, Video, Heart, MessageCircle, Upload, HardDriveUpload, CloudUpload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -25,31 +25,33 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 
 type CreatorProfileProps = {
   creator: User;
   reels: Reel[];
+  purchaseHistory: Order[];
 };
 
-export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
+export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfileProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const isCreatorOrAdmin = creator.role === 'creator' || creator.role === 'admin';
 
   // Find orders that contain items from this creator's reels
-  const creatorProductIds = reels.map(r => r.product.id);
   const creatorOrders = allOrders
     .map(order => {
         const creatorItems = order.items.filter(item => {
-            // Find which reel the ordered item belongs to
             const reel = reels.find(r => r.product.name === item.name);
             return reel && reel.creator.id === creator.id;
         });
 
         if (creatorItems.length === 0) return null;
 
-        const orderingUser = allUsers.find(u => u.id === 'user-1'); // Placeholder: in real app find user who made order
+        const orderingUser = allUsers.find(u => u.id === 'user-1');
 
         return {
             ...order,
@@ -68,8 +70,6 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
     const price = formData.get("price") as string;
 
     if (description && productName && price) {
-        // In a real app, you would handle file upload and then save to a database.
-        // Here we just show a success message.
         toast({
             title: "Reel Uploaded!",
             description: `Your new reel "${description.slice(0,20)}..." is now live.`
@@ -95,20 +95,14 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
         <div className="text-center md:text-left md:ml-6">
           <h2 className="font-headline text-4xl font-bold">{creator.name}</h2>
           <p className="text-muted-foreground">{creator.email}</p>
-          {isCreatorOrAdmin && (
-            <div className="mt-4 flex gap-2 justify-center md:justify-start">
-                <Button>
-                    <Video className="mr-2 h-4 w-4" /> Add Story
-                </Button>
-            </div>
-          )}
         </div>
       </div>
 
       <Tabs defaultValue="reels" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="reels">My Content</TabsTrigger>
             <TabsTrigger value="orders">My Orders</TabsTrigger>
+            <TabsTrigger value="purchases">My Purchases</TabsTrigger>
         </TabsList>
         <TabsContent value="reels">
             <Card className="mt-4">
@@ -125,7 +119,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
                                 <DialogHeader>
                                 <DialogTitle>Upload New Reel</DialogTitle>
                                 <DialogDescription>
-                                    Add a new video and product to your profile.
+                                    Add a new video and product to your profile. Max 1 min.
                                 </DialogDescription>
                                 </DialogHeader>
                                 <form onSubmit={handleUpload}>
@@ -151,7 +145,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
                                                         <span>From Device</span>
                                                     </Label>
                                                 </Button>
-                                                <Input id="video-file" name="video" type="file" className="hidden" required />
+                                                <Input id="video-file" name="video" type="file" className="hidden" required accept="video/mp4,video/quicktime,video/x-m4v,video/*" />
                                                 <Button type="button" variant="outline" className="flex flex-col items-center justify-center gap-2 h-full" onClick={handleGoogleDriveUpload}>
                                                     <CloudUpload className="h-6 w-6" />
                                                     <span>Google Drive</span>
@@ -192,7 +186,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
                         </div>
                     ) : (
                         <div className="text-center py-12 text-muted-foreground">
-                            <p>{isCreatorOrAdmin ? "You haven't uploaded any reels yet." : "This user hasn't uploaded any reels."}</p>
+                            <p>You haven't uploaded any reels yet.</p>
                         </div>
                     )}
                 </CardContent>
@@ -201,7 +195,7 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
         <TabsContent value="orders">
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Recent Orders</CardTitle>
+                    <CardTitle>Recent Orders From Your Reels</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -232,6 +226,63 @@ export function CreatorProfile({ creator, reels }: CreatorProfileProps) {
                             )}
                         </TableBody>
                     </Table>
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="purchases">
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle>Your Purchase History</CardTitle>
+                    <CardDescription>A record of all your past orders.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {purchaseHistory.length > 0 ? (
+                    <Accordion type="single" collapsible className="w-full">
+                        {purchaseHistory.map((order, index) => (
+                            <AccordionItem value={`item-${index}`} key={order.id}>
+                                <AccordionTrigger>
+                                    <div className="flex justify-between w-full pr-4">
+                                        <div className="text-left">
+                                            <p className="font-semibold">Order #{order.id.slice(-6)}</p>
+                                            <p className="text-sm text-muted-foreground">{order.orderDate}</p>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <p className="font-semibold">${order.totalAmount.toFixed(2)}</p>
+                                            <Badge 
+                                                variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}
+                                                className="mt-1"
+                                            >
+                                                {order.status}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="space-y-4">
+                                        {order.items.map(item => (
+                                            <div key={item.id} className="flex items-center gap-4">
+                                                <Image src={item.imageUrl} alt={item.name} width={64} height={64} className="rounded-md object-cover" data-ai-hint="food"/>
+                                                <div className="flex-1">
+                                                    <p className="font-medium">{item.name}</p>
+                                                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                                                </div>
+                                                <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                                            </div>
+                                        ))}
+                                        <Separator />
+                                        <div className="flex justify-end font-bold">
+                                            <p>Total: ${order.totalAmount.toFixed(2)}</p>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                    ) : (
+                        <div className="text-center py-12 text-muted-foreground">
+                            <p>You haven&apos;t made any purchases yet.</p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </TabsContent>

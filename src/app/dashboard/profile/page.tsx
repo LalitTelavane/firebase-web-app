@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import type { User, Reel as ReelType } from "@/lib/types";
 import { useSearchParams } from "next/navigation";
-import { PurchaseHistory } from "@/components/food-reels/purchase-history";
 import { orders } from "@/lib/placeholder-orders";
 
 export default function ProfilePage() {
@@ -21,7 +20,7 @@ export default function ProfilePage() {
         let targetUser: User | undefined;
 
         if (profileId) {
-            // View someone else's profile (usually a creator)
+            // View someone else's profile
             targetUser = users.find(u => u.id === profileId);
         } else if (authUser) {
             // View your own profile
@@ -42,22 +41,11 @@ export default function ProfilePage() {
             <p>Loading profile...</p>
         </div>
     );
-
-    const isCreator = profileUser.role === 'creator' || profileUser.role === 'admin';
     
-    // If viewing a creator's profile (or your own creator profile), show CreatorProfile
-    if (isCreator) {
-        return (
-            <div className="container mx-auto py-8">
-                <CreatorProfile creator={profileUser} reels={userReels} />
-            </div>
-        );
-    }
-
-    // Otherwise, show the regular user's purchase history
+    // All users now see the CreatorProfile, which will contain all views.
     return (
         <div className="container mx-auto py-8">
-            <PurchaseHistory user={profileUser} orders={orders} />
+            <CreatorProfile creator={profileUser} reels={userReels} purchaseHistory={orders} />
         </div>
     );
 }
