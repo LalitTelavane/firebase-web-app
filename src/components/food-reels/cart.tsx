@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -76,8 +77,8 @@ export function Cart() {
       {cartItems.length > 0 ? (
         <div className="flex h-full flex-col">
           <div className="flex-1 overflow-y-auto pr-4">
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 py-4">
+            {cartItems.map((item, index) => (
+              <div key={`${item.product.id}-${index}`} className="flex items-center gap-4 py-4">
                 <Image
                   src={item.product.imageUrl}
                   alt={item.product.name}
@@ -185,8 +186,8 @@ export function Cart() {
       <div className="py-4">
         <h4 className="font-semibold mb-2">Order Summary</h4>
         <div className="space-y-2 rounded-md border p-4">
-            {cartItems.map(item => (
-                 <div key={item.id} className="flex justify-between text-sm">
+            {cartItems.map((item, index) => (
+                 <div key={`${item.id}-${index}`} className="flex justify-between text-sm">
                     <span>{item.quantity} x {item.product.name}</span>
                     <span>${(item.quantity * item.product.price).toFixed(2)}</span>
                  </div>
