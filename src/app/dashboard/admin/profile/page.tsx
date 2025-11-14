@@ -1,4 +1,3 @@
-
 'use client';
 import { CreatorProfile } from "@/components/food-reels/creator-profile";
 import { useAuth } from "@/hooks/use-auth";
@@ -22,12 +21,9 @@ export default function AdminProfilePage() {
 
     const userReelsQuery = useMemoFirebase(() => {
         if (!firestore || !targetUserId) return null;
-        // Admins viewing their own profile see all reels.
-        if (!profileId) {
-             return query(collection(firestore, "videos"));
-        }
+        // Always query reels for the target user, whether it's the admin's own profile or another user's.
         return query(collection(firestore, "videos"), where("creatorId", "==", targetUserId));
-    }, [firestore, targetUserId, profileId]);
+    }, [firestore, targetUserId]);
 
     const { data: userReels } = useCollection<ReelType>(userReelsQuery);
 
@@ -71,5 +67,3 @@ export default function AdminProfilePage() {
         </div>
     );
 }
-
-    
