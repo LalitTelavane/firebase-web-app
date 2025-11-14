@@ -18,30 +18,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "../ui/skeleton";
-import { useFirestore } from "@/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import type { User } from "@/lib/types";
-
 
 export function UserNav() {
   const router = useRouter();
-  const { user, signOut, isUserLoading } = useAuth();
-  const firestore = useFirestore();
-  const [appUser, setAppUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    if (user && firestore && !user.isAnonymous) {
-      const userDocRef = doc(firestore, 'users', user.uid);
-      getDoc(userDocRef).then(docSnap => {
-        if(docSnap.exists()){
-            setAppUser(docSnap.data() as User)
-        }
-      })
-    } else {
-        setAppUser(null);
-    }
-  }, [user, firestore])
+  const { user, signOut, isUserLoading, appUser } = useAuth();
 
   const handleLogout = async () => {
     await signOut();
@@ -60,15 +40,14 @@ export function UserNav() {
     )
   }
 
-  const userInitial = user.isAnonymous ? 'G' : (appUser?.name?.charAt(0) || '?').toUpperCase();
-  const userName = user.isAnonymous ? 'Guest' : (appUser?.name || 'User');
+  const userInitial = user.isAnonymous ? 'G' : (appUser?.name?.charAt(0) || user.displayName?.charAt(0) || '?').toUpperCase();
+  const userName = user.isAnonymous ? 'Guest' : (appUser?.name || user.displayName || 'User');
   const userEmail = user.isAnonymous ? '' : user.email;
+  const userAvatar = appUser?.avatarUrl || user.photoURL;
   
   let profileLink = '/dashboard/profile';
   if (appUser?.role === 'admin') {
     profileLink = '/dashboard/admin/profile';
-  } else if (appUser?.id) {
-    profileLink = `/dashboard/profile?id=${appUser.id}`;
   }
 
 
@@ -79,7 +58,7 @@ export function UserNav() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10 border-2 border-transparent group-hover:border-primary transition-colors">
-              <AvatarImage src={appUser?.avatarUrl ?? `https://picsum.photos/seed/creator-avatar-1/40/40`} alt={userName} data-ai-hint="person face" />
+              <AvatarImage src={userAvatar ?? `https://picsum.photos/seed/creator-avatar-1/40/40`} alt={userName} data-ai-hint="person face" />
               <AvatarFallback>{userInitial}</AvatarFallback>
             </Avatar>
           </Button>
@@ -113,3 +92,5 @@ export function UserNav() {
     </div>
   );
 }
+
+    

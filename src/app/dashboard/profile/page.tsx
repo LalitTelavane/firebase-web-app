@@ -7,10 +7,10 @@ import type { User, Reel as ReelType } from "@/lib/types";
 import { useSearchParams } from "next/navigation";
 import { orders } from "@/lib/placeholder-orders";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+import { collection, query, where, doc, getDoc } from "firebase/firestore";
 
 export default function ProfilePage() {
-    const { user: authUser, db } = useAuth();
+    const { user: authUser, appUser: viewerUser } = useAuth();
     const firestore = useFirestore();
     const searchParams = useSearchParams();
     const profileId = searchParams.get('id');
@@ -28,24 +28,23 @@ export default function ProfilePage() {
     const { data: userReels, isLoading: reelsLoading } = useCollection<ReelType>(userReelsQuery);
 
     useEffect(() => {
-        // This simplified effect now only sets the user object for the profile header.
-        // The reels are handled by the useCollection hook.
-        if (profileId) {
-            // In a real app, you would fetch this user's profile from Firestore.
-            // For now, we are missing the full user list to search from.
-            // This part will not work correctly without a `users` collection query.
-            console.warn("Viewing other profiles is not fully supported without a user list.");
-        } else if (authUser) {
-            // For viewing your own profile
-            setProfileUser({
-                id: authUser.uid,
-                name: authUser.displayName || 'User',
-                email: authUser.email || '',
-                avatarUrl: authUser.photoURL || '',
-                role: 'user' // This might not be accurate, would need to fetch from 'users' doc
+        if (targetUserId && firestore) {
+            const userDocRef = doc(firestore, 'users', targetUserId);
+            getDoc(userDocRef).then((docSnap) => {
+                if (docSnap.exists()) {
+                    setProfileUser(docSnap.data() as User);
+                } else if (authUser && targetUserId === authUser.uid) {
+                    setProfileUser({
+                        id: authUser.uid,
+                        name: authUser.displayName || 'User',
+                        email: authUser.email || '',
+                        avatarUrl: authUser.photoURL || '',
+                        role: 'creator' // Default new users to creator
+                    });
+                }
             });
         }
-    }, [authUser, profileId]);
+    }, [authUser, targetUserId, firestore]);
 
 
     if (!profileUser) return (
@@ -59,7 +58,8 @@ export default function ProfilePage() {
             <CreatorProfile 
                 creator={profileUser} 
                 reels={userReels || []} 
-                purchaseHistory={orders} 
+                purchaseHistory={orders}
+                viewerRole={viewerUser?.role}
             />
         </div>
     );

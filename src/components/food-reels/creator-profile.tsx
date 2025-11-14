@@ -9,7 +9,7 @@ import { orders as allOrders } from "@/lib/placeholder-orders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { PlusSquare, Video, Heart, MessageCircle, Upload, HardDriveUpload, CloudUpload } from "lucide-react";
+import { Heart, MessageCircle, Upload, HardDriveUpload, CloudUpload, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -20,6 +20,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,18 +39,21 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/use-auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, deleteDoc, doc } from "firebase/firestore";
 
 
 type CreatorProfileProps = {
   creator: User;
   reels: Reel[];
   purchaseHistory: Order[];
+  viewerRole?: 'admin' | 'creator' | 'user';
 };
 
-export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfileProps) {
+export function CreatorProfile({ creator, reels, purchaseHistory, viewerRole }: CreatorProfileProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [reelToDelete, setReelToDelete] = useState<Reel | null>(null);
   const { user, db } = useAuth();
 
 
@@ -49,12 +62,14 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
     .map(order => {
         const creatorItems = order.items.filter(item => {
             const reel = reels.find(r => r.product.name === item.name);
-            return reel && reel.creator.id === creator.id;
+            // This logic is flawed with placeholder data, but shows the concept.
+            // In a real app, product would have a creatorId.
+            return reel; 
         });
 
         if (creatorItems.length === 0) return null;
 
-        const orderingUser = allUsers.find(u => u.id === 'user-1');
+        const orderingUser = allUsers.find(u => u.id === 'user-1'); // Placeholder
 
         return {
             ...order,
@@ -82,6 +97,12 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
 
     if (title && description && productName && price) {
         try {
+            const creatorData = {
+                id: user.uid,
+                name: user.displayName || 'Anonymous',
+                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/40/40`
+            };
+
             await addDoc(collection(db, "videos"), {
                 creatorId: user.uid,
                 title: title,
@@ -95,12 +116,7 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
                     price: parseFloat(price),
                     imageUrl: `https://picsum.photos/seed/${Math.random()}/150/150`
                 },
-                // Add creator info for easy access on the client
-                creator: {
-                    id: user.uid,
-                    name: user.displayName,
-                    avatarUrl: user.photoURL
-                }
+                creator: creatorData
             });
             toast({
                 title: "Reel Uploaded!",
@@ -118,12 +134,42 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
     }
   };
 
+  const handleDeleteClick = (reel: Reel) => {
+    setReelToDelete(reel);
+    setIsDeleteDialogOpen(true);
+  }
+
+  const confirmDelete = async () => {
+    if (!reelToDelete || !db) return;
+
+    try {
+        await deleteDoc(doc(db, "videos", reelToDelete.id));
+        toast({
+            title: "Reel Deleted",
+            description: `"${reelToDelete.title}" has been successfully removed.`
+        });
+    } catch(error) {
+        console.error("Error deleting reel:", error);
+        toast({
+            variant: "destructive",
+            title: "Delete Failed",
+            description: "There was an error deleting the reel."
+        })
+    } finally {
+        setIsDeleteDialogOpen(false);
+        setReelToDelete(null);
+    }
+  }
+
+
   const handleGoogleDriveUpload = () => {
     toast({
         title: "Coming Soon!",
         description: "Google Drive integration is not yet available."
     })
   }
+  
+  const isOwnProfile = user?.uid === creator.id;
 
   return (
     <div className="space-y-8">
@@ -209,7 +255,17 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
                      {reels.length > 0 ? (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
                             {reels.map(reel => (
-                                <Card key={reel.id} className="overflow-hidden group cursor-pointer">
+                                <Card key={reel.id} className="overflow-hidden group cursor-pointer relative">
+                                    {viewerRole === 'admin' && (
+                                        <Button 
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-1 right-1 z-10 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => handleDeleteClick(reel)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
                                     <CardContent className="p-0 relative aspect-[9/16]">
                                         <Image src={reel.videoUrl} alt={reel.description} fill className="object-cover" data-ai-hint="food" />
                                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -230,7 +286,7 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
                         </div>
                     ) : (
                         <div className="text-center py-12 text-muted-foreground">
-                            <p>You haven't uploaded any reels yet.</p>
+                            <p>No reels have been uploaded yet.</p>
                         </div>
                     )}
                 </CardContent>
@@ -331,6 +387,21 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
             </Card>
         </TabsContent>
       </Tabs>
+       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              reel and its data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

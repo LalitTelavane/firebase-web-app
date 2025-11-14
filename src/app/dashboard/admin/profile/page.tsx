@@ -10,20 +10,24 @@ import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection, query, where, doc, getDoc } from "firebase/firestore";
 
 export default function AdminProfilePage() {
-    const { user: authUser } = useAuth();
+    const { user: authUser, appUser: viewerUser } = useAuth();
     const firestore = useFirestore();
     const searchParams = useSearchParams();
     const profileId = searchParams.get('id');
 
     const [profileUser, setProfileUser] = useState<User | null>(null);
 
-    // Determine whose profile to view
+    // Determine whose profile to view. If no ID, admin is viewing their own profile.
     const targetUserId = profileId || authUser?.uid;
 
     const userReelsQuery = useMemoFirebase(() => {
         if (!firestore || !targetUserId) return null;
+        // Admins viewing their own profile see all reels.
+        if (!profileId) {
+             return query(collection(firestore, "videos"));
+        }
         return query(collection(firestore, "videos"), where("creatorId", "==", targetUserId));
-    }, [firestore, targetUserId]);
+    }, [firestore, targetUserId, profileId]);
 
     const { data: userReels } = useCollection<ReelType>(userReelsQuery);
 
@@ -34,7 +38,7 @@ export default function AdminProfilePage() {
                 if (docSnap.exists()) {
                     setProfileUser(docSnap.data() as User);
                 } else {
-                    // Fallback for viewing own profile if doc not found yet
+                    // Fallback for viewing own profile if doc not found yet, or for a user not in DB
                      if (authUser && targetUserId === authUser.uid) {
                         setProfileUser({
                             id: authUser.uid,
@@ -61,8 +65,11 @@ export default function AdminProfilePage() {
             <CreatorProfile 
                 creator={profileUser} 
                 reels={userReels || []} 
-                purchaseHistory={orders} 
+                purchaseHistory={orders}
+                viewerRole={viewerUser?.role}
             />
         </div>
     );
 }
+
+    
