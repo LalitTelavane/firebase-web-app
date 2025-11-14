@@ -1,37 +1,63 @@
 
 'use client';
+import { CreatorProfile } from "@/components/food-reels/creator-profile";
+import { users, reels } from "@/lib/placeholder-data";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
-import type { User } from "@/lib/types";
-import { users } from "@/lib/placeholder-data";
+import type { User, Reel as ReelType } from "@/lib/types";
+import { useSearchParams } from "next/navigation";
 import { PurchaseHistory } from "@/components/food-reels/purchase-history";
 import { orders } from "@/lib/placeholder-orders";
 
 export default function ProfilePage() {
     const { user: authUser } = useAuth();
-    const [user, setUser] = useState<User | null>(null);
+    const searchParams = useSearchParams();
+    const profileId = searchParams.get('id');
+
+    const [profileUser, setProfileUser] = useState<User | null>(null);
+    const [userReels, setUserReels] = useState<ReelType[]>([]);
 
     useEffect(() => {
-        if (authUser) {
-            // In a real app, you'd fetch this from your backend based on authUser.uid
-            const currentUser = users.find(u => u.email === authUser.email);
-            if (currentUser) {
-                setUser(currentUser);
-            }
+        let targetUser: User | undefined;
+
+        if (profileId) {
+            // View someone else's profile (usually a creator)
+            targetUser = users.find(u => u.id === profileId);
+        } else if (authUser) {
+            // View your own profile
+            targetUser = users.find(u => u.email === authUser.email);
         }
-    }, [authUser]);
+        
+        if (targetUser) {
+            setProfileUser(targetUser);
+            const foundReels = reels.filter(r => r.creator.id === targetUser!.id);
+            setUserReels(foundReels);
+        }
+
+    }, [authUser, profileId]);
 
 
-    if (!user) return (
+    if (!profileUser) return (
         <div className="container mx-auto py-8 text-center">
             <p>Loading profile...</p>
         </div>
     );
+
+    const isCreator = profileUser.role === 'creator' || profileUser.role === 'admin';
     
-    // For now, we pass the placeholder orders to the purchase history
+    // If viewing a creator's profile (or your own creator profile), show CreatorProfile
+    if (isCreator) {
+        return (
+            <div className="container mx-auto py-8">
+                <CreatorProfile creator={profileUser} reels={userReels} />
+            </div>
+        );
+    }
+
+    // Otherwise, show the regular user's purchase history
     return (
         <div className="container mx-auto py-8">
-            <PurchaseHistory user={user} orders={orders} />
+            <PurchaseHistory user={profileUser} orders={orders} />
         </div>
     );
 }

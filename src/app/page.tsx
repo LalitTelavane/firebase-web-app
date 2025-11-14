@@ -24,8 +24,6 @@ export default function Home() {
             const userData = docSnap.data();
             if (userData.role === 'admin') {
               redirect('/dashboard/admin');
-            } else if (userData.role === 'creator') {
-              redirect('/dashboard/creator');
             } else {
               redirect('/dashboard');
             }

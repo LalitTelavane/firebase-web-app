@@ -63,7 +63,7 @@ export function UserNav() {
   const userInitial = user.isAnonymous ? 'G' : (appUser?.name?.charAt(0) || '?').toUpperCase();
   const userName = user.isAnonymous ? 'Guest' : (appUser?.name || 'User');
   const userEmail = user.isAnonymous ? '' : user.email;
-  const profileLink = appUser?.role === 'creator' || appUser?.role === 'admin' ? '/dashboard/creator/profile' : '/dashboard/profile';
+  const profileLink = appUser?.id ? `/dashboard/profile?id=${appUser.id}` : '/dashboard/profile';
 
 
   return (
