@@ -14,13 +14,6 @@ export type Creator = {
   avatarUrl: string;
 };
 
-export type Story = {
-  id: string;
-  creator: Creator;
-  imageUrl: string;
-  createdAt: string;
-};
-
 export type Product = {
     id: string;
     name: string;

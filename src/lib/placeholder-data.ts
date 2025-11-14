@@ -1,4 +1,4 @@
-import type { User, Creator, Story, Reel } from './types';
+import type { User, Creator, Reel } from './types';
 
 export const creators: Creator[] = [
   { id: 'creator-1', name: 'Gusto', avatarUrl: 'https://picsum.photos/seed/creator-avatar-1/40/40' },
@@ -6,14 +6,6 @@ export const creators: Creator[] = [
   { id: 'creator-3', name: 'Chef Rico', avatarUrl: 'https://picsum.photos/seed/creator-avatar-3/40/40' },
   { id: 'creator-4', name: 'SpicySue', avatarUrl: 'https://picsum.photos/seed/creator-avatar-4/40/40' },
   { id: 'creator-5', name: 'BakeAway', avatarUrl: 'https://picsum.photos/seed/creator-avatar-5/40/40' },
-];
-
-export const stories: Story[] = [
-  { id: 'story-1', creator: creators[0], imageUrl: 'https://picsum.photos/seed/story-1/150/150', createdAt: '2h ago' },
-  { id: 'story-2', creator: creators[1], imageUrl: 'https://picsum.photos/seed/story-2/150/150', createdAt: '3h ago' },
-  { id: 'story-3', creator: creators[2], imageUrl: 'https://picsum.photos/seed/story-3/150/150', createdAt: '5h ago' },
-  { id: 'story-4', creator: creators[3], imageUrl: 'https://picsum.photos/seed/story-4/150/150', createdAt: '8h ago' },
-  { id: 'story-5', creator: creators[4], imageUrl: 'https://picsum.photos/seed/story-5/150/150', createdAt: '1d ago' },
 ];
 
 export const reels: Reel[] = [
