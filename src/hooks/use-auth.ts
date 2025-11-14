@@ -21,14 +21,12 @@ export const useAuth = () => {
     const user = userCredential.user;
 
     // Determine role and name based on email
-    let role = 'user';
+    let role = 'creator'; // Default role is now 'creator'
     let name = email.split('@')[0]; // Default name from email
 
     if (email.toLowerCase() === 'lalittelavane9@admin.com') {
       role = 'admin';
       name = 'Admin';
-    } else if (email.endsWith('@student')) {
-      role = 'creator';
     }
     
     await updateProfile(user, { displayName: name });
