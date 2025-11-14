@@ -28,6 +28,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/use-auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 
 type CreatorProfileProps = {
@@ -39,7 +41,8 @@ type CreatorProfileProps = {
 export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfileProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const isCreatorOrAdmin = creator.role === 'creator' || creator.role === 'admin';
+  const { user, db } = useAuth();
+
 
   // Find orders that contain items from this creator's reels
   const creatorOrders = allOrders
@@ -62,19 +65,56 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
     .filter(Boolean) as (Order & { customerName: string })[];
 
 
-  const handleUpload = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!user || !db) return;
+
     const formData = new FormData(event.currentTarget);
+    const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const productName = formData.get("productName") as string;
     const price = formData.get("price") as string;
+    
+    // In a real app, you'd upload the video to Firebase Storage and get the URL
+    // For now, we'll use a placeholder.
+    const videoUrl = `https://picsum.photos/seed/${Math.random()}/450/800`;
+    const thumbnailUrl = `https://picsum.photos/seed/${Math.random()}/450/800`;
 
-    if (description && productName && price) {
-        toast({
-            title: "Reel Uploaded!",
-            description: `Your new reel "${description.slice(0,20)}..." is now live.`
-        });
-        setOpen(false);
+    if (title && description && productName && price) {
+        try {
+            await addDoc(collection(db, "videos"), {
+                creatorId: user.uid,
+                title: title,
+                description: description,
+                videoUrl: videoUrl,
+                thumbnailUrl: thumbnailUrl,
+                uploadDate: serverTimestamp(),
+                likes: 0,
+                product: {
+                    name: productName,
+                    price: parseFloat(price),
+                    imageUrl: `https://picsum.photos/seed/${Math.random()}/150/150`
+                },
+                // Add creator info for easy access on the client
+                creator: {
+                    id: user.uid,
+                    name: user.displayName,
+                    avatarUrl: user.photoURL
+                }
+            });
+            toast({
+                title: "Reel Uploaded!",
+                description: `Your new reel "${title}" is now live.`
+            });
+            setOpen(false);
+        } catch (error) {
+            console.error("Error uploading reel: ", error);
+            toast({
+                variant: "destructive",
+                title: "Upload Failed",
+                description: "There was a problem uploading your reel."
+            });
+        }
     }
   };
 
@@ -124,6 +164,10 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
                                 </DialogHeader>
                                 <form onSubmit={handleUpload}>
                                     <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="title">Title</Label>
+                                            <Input id="title" name="title" placeholder="e.g. My Amazing Recipe" required />
+                                        </div>
                                         <div className="grid gap-2">
                                             <Label htmlFor="description">Reel Description</Label>
                                             <Textarea id="description" name="description" placeholder="Describe your amazing creation..." required />
@@ -290,3 +334,5 @@ export function CreatorProfile({ creator, reels, purchaseHistory }: CreatorProfi
     </div>
   );
 }
+
+    

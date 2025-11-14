@@ -73,5 +73,8 @@ export const useAuth = () => {
     signInWithEmail,
     signInAnonymously,
     signOut,
+    db: firestore
   };
 };
+
+    
